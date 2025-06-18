@@ -111,11 +111,11 @@ loadJsonp();                      // 初回
 // ---------- メイン描画 ----------
 function renderAll(d){
   data = d;                     // 再利用用に保持
-  drawBlock('A','#secA');
-  drawBlock('B','#secB');
-  drawBlock('C','#secC');
-  drawBlock('D','#secD');
-  drawFinal();
+  drawBlock('A','#secA', data);
+  drawBlock('B','#secB', data);
+  drawBlock('C','#secC', data);
+  drawBlock('D','#secD', data);
+  drawFinal(data);
 }
 
 // ---------- ブロック別スケジュール＋順位 ----------
