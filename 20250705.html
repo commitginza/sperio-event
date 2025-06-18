@@ -45,6 +45,13 @@ h1{font-size:1.4rem;font-weight:700}
   border-radius: 8px;
   will-change: transform;
 }
+/* ── 順位：上位 2 チーム ── */
+tr.qualified   {background:#1e7e34!important;color:#fff;font-weight:700;}
+tr.qualified td{border-color:#1e7e34!important}
+
+/* ── スケジュール：試合終了 ── */
+tr.finished         {opacity:.6}
+tr.finished td      {text-decoration:line-through}
 @media (max-width: 600px) {
   .canva-time-link{
     padding-top: 137.1701%;
@@ -121,12 +128,14 @@ function renderAll(d){
 // ---------- ブロック別スケジュール＋順位 ----------
 function drawBlock(block, selector, data){
   const schRows = data.schedule.slice(1).filter(r=>r[1]===block);
-  const staRows = data.standings.slice(1).filter(r=>r[1]===block);
+  const staRows = data.standings.slice(1)
+                 .filter(r=>r[1]===block)
+                 .sort((a,b)=>b[9]-a[9]||(b[6]-b[7])-(a[6]-a[7]));
   document.querySelector(selector).innerHTML = `
     <h2 class="h5 text-warning mb-2">スケジュール</h2>
     ${tableSchedule(schRows)}
     <h2 class="h5 text-warning mt-4 mb-2">順位</h2>
-    ${tableStand(staRows)}
+    ${tableStand(staRows, block)}
   `;
 }
 
@@ -156,15 +165,33 @@ function drawFinal(data){
 
 // ---------- テーブル生成関数 ----------
 function tableSchedule(rows){
-  const tr = rows.map(r=>`<tr><td>${r[0]}</td><td>${r[4]}</td><td>${r[2]}</td><td>${r[3]}</td></tr>`).join('');
-  return `<div class="table-responsive"><table class="table table-dark table-striped mb-0 tbl-schedule"><colgroup><col><col><col><col></colgroup>
-    <thead><tr><th>開始時刻</th><th>コート</th><th></th><th></th></tr></thead><tbody>${tr}</tbody></table></div>`;
+  const tr = rows.map(r=>{
+    const klass = r[7]==='試合終了' ? 'finished' : '';
+    return `<tr class="${klass}"><td>${r[0]}</td><td>${r[4]}</td><td>${r[2]}</td><td>${r[3]}</td></tr>`;
+  }).join('');
+  return `
+    <div class="table-responsive"><table class="table table-dark table-striped mb-0 tbl-schedule">
+      <colgroup><col><col><col><col></colgroup>
+      <thead><tr><th>開始時刻</th><th>コート</th><th></th><th></th></tr></thead>
+      <tbody>${tr}</tbody>
+    </table></div>`;
 }
+
 function tableStand(rows){
-  const tr = rows.map(r=>`<tr>${[0,2,3,4,5,6,7,8,9].map(i=>`<td>${r[i]}</td>`).join('')}</tr>`).join('');
-  return `<div class="table-responsive"><table class="table table-dark table-striped mb-0 tbl-stand"><colgroup><col><col span="8"></colgroup>
-    <thead><tr><th>チーム</th><th>試合</th><th>勝</th><th>分</th><th>負</th><th>得点</th><th>失点</th><th>得失</th><th>勝点</th></tr></thead><tbody>${tr}</tbody></table></div>`;
+  const tr = rows.map((r,i)=>{
+    const klass = i<2 ? 'qualified' : '';
+    return `<tr class="${klass}">
+      ${[0,2,3,4,5,6,7,8,9].map(j=>`<td>${r[j]}</td>`).join('')}
+    </tr>`;
+  }).join('');
+  return `
+    <div class="table-responsive"><table class="table table-dark table-striped mb-0 tbl-stand">
+      <colgroup><col><col span="8"></colgroup>
+      <thead><tr><th>チーム</th><th>試合</th><th>勝</th><th>分</th><th>負</th><th>得点</th><th>失点</th><th>得失</th><th>勝点</th></tr></thead>
+      <tbody>${tr}</tbody>
+    </table></div>`;
 }
+
 function tableKO(rows){
   const tr = rows.map(r=>`<tr>${[0,1,2,3,4,5].map(i=>`<td>${r[i]??''}</td>`).join('')}</tr>`).join('');
   return `<div class="table-responsive"><table class="table table-dark table-striped mb-0">
