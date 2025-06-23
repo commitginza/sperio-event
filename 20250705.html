@@ -52,8 +52,8 @@ tr.cutoff td{
 /* ── スケジュール：試合終了 ── */
 tr.finished         {opacity:.6}
 tr.finished td      {text-decoration:line-through}
-.tbl-schedule td.team-red   {color:#ff4b4b;font-weight:700;}   /* 左側：Red */
-.tbl-schedule td.team-white {color:#ffffff;font-weight:700;}   /* 右側：White */
+.tbl-schedule .team-red   {color:#ff4b4b;font-weight:700;}   /* 左側：Red */
+.tbl-schedule .team-white {color:#ffffff;font-weight:700;}   /* 右側：White */
 @media (max-width: 600px) {
   .canva-time-link{
     padding-top: 137.1701%;
@@ -180,7 +180,7 @@ function tableSchedule(rows){
   return `
     <div class="table-responsive"><table class="table table-dark table-striped mb-0 tbl-schedule">
       <colgroup><col><col><col><col></colgroup>
-      <thead><tr><th>開始時刻</th><th>コート</th><th></th><th></th></tr></thead>
+      <thead><tr><th>開始時刻</th><th>コート</th><th class="team-red">RED</th><th class="team-white">WHITE</th></tr></thead>
       <tbody>${tr}</tbody>
     </table></div>`;
 }
